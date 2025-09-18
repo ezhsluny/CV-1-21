@@ -7,53 +7,7 @@ displays a comparison collage, and calculates file size statistics.
 
 import os
 import cv2
-import numpy as np
 
-
-def resizing(img, qual):
-    """
-    Resize an image by a given quality percentage.
-
-    Args:
-        img (numpy.ndarray): Input image to be resized
-        qual (int): Quality percentage for resizing (1-100)
-
-    Returns:
-        numpy.ndarray: Resized image using nearest neighbor interpolation
-    """
-    img_h, img_w = img.shape[:2] # Height and width of original image
-    new_w = int(img_w*qual/100) # Height and width for resizing
-    new_h = int(img_h*qual/100)
-    res_img = cv2.resize(img, (new_w, new_h), cv2.INTER_NEAREST)
-
-    return res_img
-
-def center_image(orig_img, compr_img):
-    """
-    Center a compressed image on a black background of original dimensions 
-    for further convinient visualisation.
-
-    Args:
-        orig_img (numpy.ndarray): Original image for dimensions
-        compr_img (numpy.ndarray): Compressed image to be centered
-
-    Returns:
-        numpy.ndarray: Image with compressed content centered on black background
-    """
-    h, w = orig_img.shape[:2] # Height and width of original image
-    comp_h, comp_w = compr_img.shape[:2] # Height and width of compressed image
-    
-    # Black background with original image dimensions
-    black_background = np.zeros((h, w, 3), dtype=np.uint8)
-    
-    # Calculate center position for the compressed image
-    x_center = (w - comp_w) // 2
-    y_center = (h - comp_h) // 2
-    
-    # Place compressed image at the center
-    black_background[y_center:y_center+comp_h, x_center:x_center+comp_w] = compr_img
-    
-    return black_background
 
 def get_file_size(filename):
     """
@@ -67,52 +21,68 @@ def get_file_size(filename):
     """
     return os.path.getsize(filename)
 
-def main():
-    # Path to the original image
-    orig_file = 'CV-1-21/images/test.jpg'
+def change_quality(filename, quality_list):
+    """
+    Compress image at different quality levels and collect results.
     
-    img = cv2.imread(orig_file)
+    Args:
+        filename (str): Path to the source image file
+        quality_list (list): List of quality percentages for compression
+        
+    Returns:
+        list: List of images including original and compressed versions
+    """
+    # Load the original image
+    img = cv2.imread(filename)
     if img is None:
         print("Error: failed to open image")
         exit()
     
-    # Initialize lists and dictionaries for storing results
-    centered_images = []
+    # Initialize dictionary for storing file sizes
     file_sizes = {}
+    processed_images = [img.copy()]
 
-    # Process original image
-    original_size = get_file_size(orig_file)
+    # Process original image - get its file size
+    original_size = get_file_size(filename)
     file_sizes['100%'] = original_size
-    centered_images.append(img)  # Add original image to comparison list
-
-    # Compression levels
-    quality_list = [95, 50, 10]
     
-    # Process each compression level
+    # Process each compression level in the quality list
     for quality in quality_list:
-        # Resize image
-        compr_img = resizing(img, quality)
+        # Generate filename for compressed image
+        compressed_filename = f'CV-1-21/images/compressed_{quality}percent.jpg'
         
-        # Center the compressed image
-        centered_img = center_image(img, compr_img)
-        centered_images.append(centered_img)
-
-        # Save the compressed image
-        filename = f'CV-1-21/images/compressed_{quality}percent.jpg'
-        cv2.imwrite(filename, compr_img)
-        print(f"Saved: {filename}")
+        # Save image with specified JPEG quality
+        cv2.imwrite(compressed_filename, img, [cv2.IMWRITE_JPEG_QUALITY, quality])
+        print(f"Saved: {compressed_filename}")
 
         # Calculate compression statistics
-        file_size = get_file_size(filename)
+        file_size = get_file_size(compressed_filename)
         file_sizes[f'{quality}%'] = file_size
         
-    # Print file sizes for all processed images
+        # Load the compressed image for collage display
+        compressed_img = cv2.imread(compressed_filename)
+        processed_images.append(compressed_img)
+        
+    # Print file sizes for all processed images (original + compressed)
     print("File sizes (quality %: size in bytes)\n", file_sizes)
 
-    # Create a horizontal collage of all images for visual comparison
-    collage = cv2.hconcat(centered_images)
+    return processed_images
 
-    cv2.imshow('Images Comparison', collage)  
+def main():
+    # Path to the original image file
+    orig_file = '/home/ezhsluny/Documents/iir_proj/CV-1-21/images/test.jpg'
+
+    # Compression quality levels to test
+    quality_list = [95, 50, 10]
+
+    # Generate compressed images and collect them for collage
+    images_for_collage = change_quality(orig_file, quality_list)
+    
+    # Create horizontal collage by concatenating all images
+    collage = cv2.hconcat(images_for_collage)
+    
+    # Display the comparison collage
+    cv2.imshow('Image Compression Comparison', collage)  
     cv2.waitKey(0)  
     cv2.destroyAllWindows()
 
