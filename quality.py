@@ -78,6 +78,7 @@ def main():
     # Generate compressed images and collect them for collage
     images_for_collage = change_quality(orig_file, quality_list)
     
+    # --- Optional visualization ---
     # Create horizontal collage by concatenating all images
     collage = cv2.hconcat(images_for_collage)
     
