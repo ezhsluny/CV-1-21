@@ -13,14 +13,17 @@ A Python script that demonstrates image compression at different quality levels.
 - Calculate and display file size statistics
 
 ## Features
+- Command-line interface with flexible arguments
 - Image loading and processing using OpenCV
 - Multiple compression levels (95%, 50%, 10% quality)
 - File size calculation before and after compression
-- Horizontal collage creation for visual comparison
+- Visual comparison collage with quality labels on each image
+- Input validation for file existence and quality values
 
 ## Requirements
 - Python 3.x
 - OpenCV (`opencv-python`)
+- NumPy (`numpy` - dependency of OpenCV)
 
 Install dependencies:
 ```bash
@@ -34,12 +37,17 @@ pip install -r requirements.txt
 
 ## Usage
 1. **Prepare Your Image**:
-   - Place your test image in the `CV-1-21/images/` directory
-   - Name the file `test.jpg` or modify the path in the code
+   - Place your test image in a convenient directory
 
 2. **Run the Script**:
    ```bash
-   python3 image_compression.py
+   python3 quality.py [-h] [-o OUTPUT_DIR] input_image
+
+   # Compress an image with default output directory
+   python3 quality.py input_image.jpg
+
+   # Compress with custom output directory
+   python3 quality.py input_image.jpg -o my_compressed_images
    ```
 
 3. **View Results**:
@@ -49,11 +57,9 @@ pip install -r requirements.txt
 
 4. **Customize Parameters**:
    - Modify the `quality_list` in the `main()` function for different quality levels
-   - Change the `orig_file` path to use a different image
-   - Change the `output_dir` path to use a different directory to store processed images
 
 ## Example Output Files
-After running the script, the following files will be created in `CV-1-21/images/`:
-- `compressed_95percent.jpg` - High quality compression
-- `compressed_50percent.jpg` - Medium quality compression
-- `compressed_10percent.jpg` - Low quality compression
+After running the script, the following files will be created in the output directory:
+- `compressed_images/test_compressed_95percent.jpg` - High quality compression
+- `compressed_images/test_compressed_50percent.jpg` - Medium quality compression
+- `compressed_images/test_compressed_10percent.jpg` - Low quality compression
