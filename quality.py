@@ -7,6 +7,7 @@ displays a comparison collage, and calculates file size statistics.
 
 import os
 import cv2
+import argparse
 
 
 def get_file_size(filename):
@@ -66,6 +67,10 @@ def change_quality(filename, quality_list, output_dir='CV-1-21/images'):
     if not os.path.exists(filename):
         raise FileNotFoundError(f"Input file not found: {filename}")
     
+    # Validate file is an image
+    if not filename.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.tiff')):
+        print(f"Warning: {filename} may not be a supported image format")
+
     validate_quality_values(quality_list)
     
     # Create output directory if it doesn't exist
@@ -123,18 +128,37 @@ def change_quality(filename, quality_list, output_dir='CV-1-21/images'):
 
     return results
 
+def parse_arguments():
+    """
+    Parse command line arguments.
+    
+    Returns:
+        argparse.Namespace: Parsed command line arguments
+    """
+    parser = argparse.ArgumentParser(description='Image compression tool with quality comparison')
+    
+    parser.add_argument('input_image', 
+                       help='Path to the input image file')
+    
+    parser.add_argument('-o', '--output-dir', 
+                       default='images',
+                       help='Output directory for compressed images (default: compressed_images)')
+    
+    return parser.parse_args()
+
 
 def main():
     try:
-        orig_file = '/home/ezhsluny/Documents/iir_proj/CV-1-21/images/test.jpg'
+        # Parse command line arguments
+        args = parse_arguments()
 
+        print(f"Processing image: {args.input_image}")
+        print(f"Output directory: {args.output_dir}")
+        
         # Compression quality levels to test
         quality_list = [95, 50, 10]
-        
-        # Output directory
-        output_dir = 'CV-1-21/images'
 
-        results = change_quality(orig_file, quality_list, output_dir)
+        results = change_quality(args.input_image, quality_list, args.output_dir)
         
         # Print file sizes
         print("File sizes (quality %: size in bytes)")
