@@ -24,7 +24,7 @@ A Python script that demonstrates image compression at different quality levels.
 
 Install dependencies:
 ```bash
-pip install opencv-python
+pip install -r requirements.txt
 ```
 
 ## Installation
@@ -50,18 +50,10 @@ pip install opencv-python
 4. **Customize Parameters**:
    - Modify the `quality_list` in the `main()` function for different quality levels
    - Change the `orig_file` path to use a different image
+   - Change the `output_dir` path to use a different directory to store processed images
 
-## Output Files
+## Example Output Files
 After running the script, the following files will be created in `CV-1-21/images/`:
 - `compressed_95percent.jpg` - High quality compression
 - `compressed_50percent.jpg` - Medium quality compression
 - `compressed_10percent.jpg` - Low quality compression
-
-## Example Console Output
-```
-Saved: CV-1-21/images/compressed_95percent.jpg
-Saved: CV-1-21/images/compressed_50percent.jpg
-Saved: CV-1-21/images/compressed_10percent.jpg
-File sizes (quality %: size in bytes)
- {'100%': 1024000, '95%': 512000, '50%': 256000, '10%': 128000}
-```
